@@ -2,7 +2,7 @@
 Homework and Final Project for PSTAT 174 - Time Series Analysis
 
 ## Final Project
-Analysis and forecasting of atmospheric $C0_2$ concentration
+Analysis and forecasting of atmospheric C02 concentration
 
 ## Homework
 Homework are in their respective folders
