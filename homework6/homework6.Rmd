@@ -1,0 +1,44 @@
+---
+title: 'PSTAT 174 HW #6'
+author: "Chris Meade"
+date: "2/26/2017"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+```
+
+## Problem 1
+
+Given that $\sum_{i=1}^5 \hat\rho_{\hat W}(i)=0.005$, we may calcuate the the Protmanteau test statistic.
+
+$$Q_{W} = n \sum_{j=1}^h \hat\rho_{\hat W}^2(j)=50(0.005)=0.25\sim\chi^2_{7-1-1}$$
+
+The the critical value for $\chi^2_{1-0.05, 5}$ is $1.145. Since $0.25<1.145$, we fail to reject the null hypothesis, which states that the residuals are white noise. Therefore we conclude that the residuals are compatible with the proposed model.
+
+## Problem 2
+
+**Portmanteau Test**
+$$Q_{W} = n \sum_{j=1}^h \hat\rho_{\hat W}^2(j)=100[0.20^2+0.15^2+0.18^2+0.16^2+0.08^2+0.07^2+0.09^2]=13.99\sim\chi^2_{10-1-2}$$
+
+**Ljung-Box Test**
+$$\begin{aligned}
+\tilde Q_W=n(n+2)\dfrac{\sum_{j=1}^h \hat\rho_{\hat W}^2 (j)}{n-j}&=10200[0.20^2/99+0.15^2/98+0.18^2/97+0.16^2/96+0.08^2/95+0.07^2/94+0.09^2/93] \\
+&=14.697\sim\chi^2_{10-1-2}
+\end{aligned}$$
+
+## Problem 3
+$\begin{aligned}
+AIC_{AR(2)}&=-2\times \text{log-likelihood}+2\times  \text{number of free parameters} \\
+&=-2(-36.4)+2(2) \\
+&=76.8
+\end{aligned}$
+
+$AIC_{MA(1)}=-2(-36.51)+2(1)=75.02$
+
+$AIC_{ARMA(2,1)}=-2(-36.02)+2(3)=78.04$
+
+Since a smaller AIC is _better_, we would rank our time series $MA(1)$, $AR(1)$, $ARMA(2,1)$, from best to worst.
+
+## Problem 4
+
