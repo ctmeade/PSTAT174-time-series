@@ -42,3 +42,17 @@ Since a smaller AIC is _better_, we would rank our time series $MA(1)$, $AR(1)$,
 
 ## Problem 4
 
+We assume, for contradiction, that the model $X_t-\phi_1 X_{t-1}=Z_t+\theta_1 Z_{t-1}$ is appropriate. This implies that the ACF of the residuals would be $0$ at all lags $h>0$. That is, $0\in I_{\hat\rho_{\hat W}(h)} \ \forall h>0$, where $I_{\hat\rho_{\hat W}(h)}$ represents the $95\%$ confidence interval for $\hat\rho_{\hat W}(h)$.
+
+Let $h=1$. Then 
+
+$$
+\begin{aligned}
+I_{\hat\rho_{\hat W}(1)} &= \hat\rho_{\hat W}(1)\mp Z_{0.025}Sd_{\hat\rho_{\hat{
+W}(1)}}/\sqrt{n} \\
+&=.50\mp 1.96(0.08/\sqrt(26)) \\
+&=(0.47,\ 0.53)
+\end{aligned}
+$$
+
+But clearly $0\not\in I_{\hat\rho_{\hat W}(1)}$, so we arrive at a contradiction and conclude that the given model is not appropriate.
