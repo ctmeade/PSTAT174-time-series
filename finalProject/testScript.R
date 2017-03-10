@@ -6,30 +6,35 @@ ts <- ts$V4
 
 # Encode missing values
 ts <- ifelse(ts == -99.99, NA, ts)
-
+orig <- ts
+next10 <- orig[697:706]
 # Convert vector to time series object
 ts <- ts(ts, start=c(1958,3), frequency=12)
-
+ts <- ts[1:696]
 plot.ts(ts)
-mean(ts, na.rm=T)
-abline(h=mean(ts, na.rm=T))
+var(ts, na.rm=T)
 
+ts.log <- log(ts)
+plot.ts(ts.log)
+var(ts.log, na.rm=T)
 #Difference
-ts.12 <- diff(ts, lag = 12)
-plot(ts.12)
+ts.log.12 <- diff(ts.log, lag = 12)
+plot.ts(ts.log.12)
+var(ts.12, na.rm=T)
 
 # Good differencing order, variance decreases
-ts.12.1 <- diff(ts.12, lag = 1)
-plot(ts.12.1)
-var(ts, na.rm = T)
-var(ts.12, na.rm = T)
-var(ts.12.1, na.rm = T)
+ts.log.12.1 <- diff(ts.log.12, lag = 1)
+plot.ts(ts.log.12.1)
+var(ts.log.12.1, na.rm = T)
+avg <- mean(ts.log.12.1, na.rm = T)
+abline(h=avg)
+abline(h=0, col = "red")
 
-#ts.12.1 stationary
+#ts.12.1 stationary since mean variance time independent, both 0
 
 ### ACF
 
-acf <- acf(ts.12.1, type = "correlation", plot = F, na.action = na.pass, lag.max=12*5)
+acf <- acf(ts.log.12.1, type = "correlation", plot = F, na.action = na.pass, lag.max=12*5)
 
 ## Transform the lags from years to months
 acf$lag <- acf$lag * 12
@@ -38,27 +43,37 @@ acf$lag <- acf$lag * 12
 plot(acf, xlab="Lag (months)")
 
 ### PACF
-pacf <- acf(ts.12.1, type = "partial", plot = F, na.action = na.pass, lag.max= 12*5)
+pacf <- acf(ts.log.12.1, type = "partial", plot = F, na.action = na.pass, lag.max= 12*5)
 pacf$lag <- pacf$lag * 12
 plot(pacf, xlab = "Lag (months)")
 
 ## Seasonal: ACF cuts off after lag 1 (12), PACF tailing off
 
-model1 <- arima(ts.12.1, order = c(0,1,1), seasonal = c(3,1,1), method = "ML")
-Box.test(model1$residuals, lag = 10, fitdf = 0)
-acf(model1$residuals, na.action=na.pass, plot = T)
 
- for (P in seq(1,3)){
-    for (Q in seq(1,3)){
-      cat(P,Q,sep = " ")
-      model <- arima(ts.12.1, order = c(0,1,1), seasonal = c(P,1,Q), method = "ML")
-      print(paste(model$aic))
-      cat('\n')
-  }
- }
+model1 <- Arima(ts.log, order = c(0,1,2), seasonal = list(order = c(0,1,1), period = 12))
+hist(model1$residuals, breaks = 25, xlim=c(-0.005, 0.005))
+Box.test(model1$residuals)
+pred <- predict(model1, n.ahead = 10)
+pred.orig <- exp(pred$pred)
+pred.se <- exp(pred.orig*pred$se)
 
-model1 <- arima(ts.12.1, order = c(0,1,2), seasonal = c(1,1,2), method = "ML")
-hist(model1$residuals)
-qqline(model1$residuals)
-acf(model1$residuals, na.action = na.pass, plot = T)
-Box.test(model1$residuals, lag=13, fitdf=4)
+plot.ts(orig, xlim = c(680,length(orig)+10), ylim = c(380,420))
+points((length(orig)+1):(length(orig)+10),pred.orig, col="red")
+points((length(orig)+1):(length(orig)+10),next10, pch = 3)
+lines((length(orig)+1):(length(orig)+10),pred.orig+1.96*pred.se,lty=2, col="blue") 
+lines((length(orig)+1):(length(orig)+10),pred.orig-1.96*pred.se,lty=2, col="blue")
+
+model2 <- Arima(ts.log, order = c(4,1,0), seasonal = list(order = c(2,1,0), period = 12))
+hist(model2$residuals, breaks = 25, xlim=c(-0.005, 0.005))
+Box.test(model2$residuals)
+
+pred2 <- predict(model2, n.ahead = 10)
+pred.2orig <- exp(pred2$pred)
+pred.se <- exp(pred$se)
+
+plot.ts(orig, xlim = c(680,length(orig)+10), ylim = c(380,420))
+points((length(orig)+1):(length(orig)+10),pred.2orig, col="red")
+points((length(orig)+1):(length(orig)+10),next10, pch = 3)
+lines((length(orig)+1):(length(orig)+10),pred.2orig+1.96*pred.se,lty=2, col="blue") 
+lines((length(orig)+1):(length(orig)+10),pred.2orig-1.96*pred.se,lty=2, col="blue")
+
