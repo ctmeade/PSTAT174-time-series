@@ -1,22 +1,61 @@
 ---
-title: "PSTAT 174 Final Project"
+title: "Forecasting Atmospheric Carbon Dioxide Concentration with ARIMA Models"
 author: "Chris Meade"
 date: "2/23/2017"
+toc: true
+number_sections: true
 output: pdf_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r}
-summary(cars)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
 ```
+\newpage
 
-You can also embed plots, for example:
+## 1. Abstract
 
-```{r, echo=FALSE}
-plot(cars)
-```
+As a greenhouse gas, carbon dioxide ($\text{CO}_2$) is one of the driving forces behind global warming. Since the beginning of the industrial revolution, atmospheric $\text{CO}_2$ levels have risen more than $40\%$ and give no idication of slowing down.(citation - wikipedia) This project utilizes seasonal autoregressive integrated moving average (SARIMA) models to accurately forecast atmospheric carbon dioxide concentrations 10 months into the future. These forecast can be used to predict other meteorological phenomena, such as catastrophic weather events and global temperature rises.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## 2. Introduction
+
+Global warming is perhaps the greatest problem facing future generations. One of largest contributing factors to global warming is atmospheric carbon dioxide. Since the effects of global warming are widespread and catastrophic, it is important to accurately predict how atmospheric $\text{CO}_2$ levels will change into the future. The goal of this paper is to forecast monthly atmospheric carbon dioxide concentration using SARIMA models. Our results indicate that atmospheric $\text{CO}_2$ concentrations can be accurately forecasted 10 months into the future.
+
+### 2.1 About the Data
+
+The models in this project were trained from monthly mean atmospheric carbon dioxide concentrations measured in parts per million. The data were collected at the Mauna Loa Observatory in Hawaii, beginning in March 1958. These data are publically available and freely distributed by the National Oceanic & Atmospheric Administration in accordance to their Global Greenhouse Gas Reference Network. The data table used in the project is available at [the NOAA website.](ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt)
+ 
+
+### 2.2 Software Used in Analysis
+
+All statistical analysis performed in this project was done with the `RStudio` integrated development environment. In addition to base `R`, the following software libraries were used: `MASS`, `stats`, and `forecast`. Please note that `forecast::Arima()` was used instead of `stats::arima()`. According to the creator of the `forecast` package, Rob J Hyndman, `Arima()` allows for the inclusion of a contant term in the model when using differenced data. This functionality is not included in `arima()`.
+### 2.3 Results
+
+Using SARIMA models, we conclude that atmospheric $\text{CO}_2$ can be accurately forecasted.
+
+### 2.4 Preview of Analysis
+
+We begin the project by loading our data in `R` and performing exploratory analysis. We first discover and encode missing values, then transform the series to make it stationary.
+
+## 3. Analysis
+
+### 3.1 Exploratory Data Analysis
+
+### 3.2 Data Transformations
+
+### 3.3 ACF and PACF Analysis
+
+### 3.4 Model Fitting
+
+#### 3.4.1 Model 1
+
+#### 3.4.2 Model 2
+
+### 3.5 Forecasting
+
+## 4. Conclusion
+
+## 5. References
+
+## Appendix A
+
+
