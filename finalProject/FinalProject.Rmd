@@ -12,7 +12,7 @@ output: pdf_document
 
 ## 1. Abstract
 
-As a greenhouse gas, carbon dioxide ($\text{CO}_2$) is one of the driving forces behind global warming. Since the beginning of the industrial revolution, atmospheric $\text{CO}_2$ levels have risen more than $40\%$ and give no idication of slowing down. This project utilizes seasonal autoregressive integrated moving average (SARIMA) models to accurately forecast atmospheric carbon dioxide concentrations 10 months into the future. It is our hope that these forecast may be useful for anticipating other meteorological phenomena, such as catastrophic weather events and global temperature rises.
+As a greenhouse gas, carbon dioxide ($\text{CO}_2$) is one of the driving forces behind global warming. Since the beginning of the industrial revolution, atmospheric $\text{CO}_2$ levels have risen more than $40\%$ and give no idication of slowing down. This project utilizes seasonal autoregressive integrated moving average (SARIMA) models to accurately forecast atmospheric carbon dioxide concentrations 10 months into the future. It is our hope that these forecasts may be useful for anticipating other meteorological phenomena, such as catastrophic weather events and global temperature rises.
 
 ## 2. Introduction
 
@@ -33,7 +33,7 @@ Using SARIMA models, we conclude that atmospheric $\text{CO}_2$ concentrations c
 
 ### 2.4 Summary of Analysis
 
-We begin the project by loading our data in `R`. We first remove the last 10 observations for comparison against our forecast. Next, we begin conducting exploratory analysis of the data and discover that it requires a transformation to statilize variance and differencing to remove trend and seasonality. We perform this transformation and differencing, yielding a stationary time series. Next, we examine the autocorrelations (ACF) and partial autocorrelations (PACF) of the stationary series to identify appropriate models. After constructing two potential models, we conduct model diagnostics to make sure each meets the assumptions of SARIMA. Finally, we choose a 'best' model and use it to forecast ten future observations. These forecasts are compared against the 10 observations we reserved in the beginning in order to evaluate model performance.
+We begin the project by loading our data in `R`. We first remove the last 10 observations for comparison against our forecasts. Next, we begin conducting exploratory analysis of the data and discover that it requires a transformation to statilize variance and differencing to remove trend and seasonality. We perform this transformation and differencing, yielding a stationary time series. Next, we examine the autocorrelations (ACF) and partial autocorrelations (PACF) of the stationary series to identify appropriate models. After constructing two potential models, we conduct model diagnostic checking to make sure each meets the assumptions of SARIMA. Finally, we choose a 'best' model and use it to forecast ten future observations. These forecasts are compared against the 10 observations we reserved in the beginning in order to evaluate model performance.
 
 ## 3. Analysis
 
@@ -87,7 +87,7 @@ $$y_i^{(\lambda)}=\begin{cases}
                   \log{y_i}, & \text{if}\ \lambda=0
                \end{cases}$$
 
-We use `R` to find the best $\lambda$. In accordance with the methodology in Brockwell & Davis, we limit the parameter space so that $\lambda\in [0,1.5]$.
+We use `R` to find the best $\lambda$. In accordance with the methodology in Brockwell & Davis, we restrict the parameter space so that $\lambda\in [0,1.5]$.
 
 ```{r, echo = F}
 library(MASS)
@@ -182,14 +182,14 @@ plot(model1$residuals, main="Model 1 Residuals")
 
 Apart from a single outlier at $t=13$, the residuals appear to resemble white noise.
 
-Intersting, the residuals fail the Shapiro-Wilks normality test with this outlier present, put pass the test when it is removed.
+Interstingly, the residuals fail the Shapiro-Wilks normality test with this outlier present, put pass the test when it is removed.
 
 ```{r,message=F,echo=F}
 shapiro.test(model1$residuals)
 shapiro.test(model1$residuals[14:706])
 ```
 
-We now plot the density of QQ-Plot of the residuals.
+We now plot the density and the QQ-Plot of the residuals.
 
 ```{r, echo = F}
 hist(model1$residuals, xlim = c(-0.005,0.005), main = "Model 1 Residuals", breaks = 50)
@@ -257,7 +257,7 @@ qqnorm(model2$residuals)
 qqline(model2$residuals)
 ```
 
-The histogram and QQ-Plot also show that the residuals are distributed normally. We now perform a battery of statistical tests.
+The histogram and QQ-Plot also show that the residuals are distributed normally. We now perform the Box-Pierce, Ljung-Box, and McLeod-Li tests on the residuals.
 
 ```{r, echo = F}
 paste("Box-Pierce")
@@ -283,7 +283,7 @@ Since both Model 1 and Model 2 pass our residuals tests and have similar AICc an
 
 ### 3.5 Forecasting
 
-Now that we have a final model, we may begin forecasting. Forecasts are plotted below in red, and the actual observations appear as asterisks. The blue dotted line represents the $95\%$ confidence interval of the forecasts.
+Now that we have a final model, we may begin forecasting. Forecasts are plotted below in red, and the actual observations appear as asterisks. The blue dotted lines represent the $95\%$ confidence interval of the forecasts.
 
 ```{r, echo = F}
 pred <- predict(model1, n.ahead = 10)
@@ -325,9 +325,10 @@ https://www.washingtonpost.com/national/health-science/co2-levels-in-atmosphere-
 
 ## Appendix
 
-The `R` used to create the analysis in this report is provided in its entirety below.
+The `R` code used to create the analysis in this report is provided in its entirety below.
 
 ```{r, eval=F}
+library(stats)
 # Import Data
 ts <- read.table("c02.txt", skip = 3, header = F, sep = "")
 
@@ -449,4 +450,4 @@ lines((length(orig)+1):(length(orig)+10),pred.orig+1.96*pred.se,lty=2, col="blue
 lines((length(orig)+1):(length(orig)+10),pred.orig-1.96*pred.se,lty=2, col="blue")
 ```
 
-This report was generated in its entirety by `R Markdown` and  \LaTeX \ .
+This report was generated with `R Markdown` and  \LaTeX \ .
