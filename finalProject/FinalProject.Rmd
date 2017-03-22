@@ -12,28 +12,28 @@ output: pdf_document
 
 ## 1. Abstract
 
-As a greenhouse gas, carbon dioxide ($\text{CO}_2$) is one of the driving forces behind global warming. Since the beginning of the industrial revolution, atmospheric $\text{CO}_2$ levels have risen more than $40\%$ and give no idication of slowing down.(citation - wikipedia) This project utilizes seasonal autoregressive integrated moving average (SARIMA) models to accurately forecast atmospheric carbon dioxide concentrations 10 months into the future. It is our hope that these forecast may be useful for anticipating other meteorological phenomena, such as catastrophic weather events and global temperature rises.
+As a greenhouse gas, carbon dioxide ($\text{CO}_2$) is one of the driving forces behind global warming. Since the beginning of the industrial revolution, atmospheric $\text{CO}_2$ levels have risen more than $40\%$ and give no idication of slowing down. This project utilizes seasonal autoregressive integrated moving average (SARIMA) models to accurately forecast atmospheric carbon dioxide concentrations 10 months into the future. It is our hope that these forecast may be useful for anticipating other meteorological phenomena, such as catastrophic weather events and global temperature rises.
 
 ## 2. Introduction
 
-Global warming is perhaps the greatest problem facing future generations. One of largest contributing factors to global warming is atmospheric carbon dioxide. Since the effects of global warming are widespread and catastrophic, it is important to accurately predict how atmospheric $\text{CO}_2$ levels will change into the future. The goal of this paper is to forecast monthly atmospheric carbon dioxide concentration by utilizing the Box-Jenkins methodology to fit an appropriate SARIMA model. Our results were successful and indicate that atmospheric $\text{CO}_2$ concentrations can be accurately forecasted 10 months into the future.
+Global warming is perhaps the greatest problem facing future generations. One of largest contributing factors to global warming is atmospheric carbon dioxide. Since the effects of global warming are widespread and catastrophic, it is important to accurately predict how atmospheric $\text{CO}_2$ levels will change into the future. The goal of this paper is to forecast monthly atmospheric carbon dioxide concentration by utilizing the Box-Jenkins methodology to fit an appropriate SARIMA model. Our efforts were successful and our results indicate that atmospheric $\text{CO}_2$ concentrations can be accurately forecasted 10 months into the future.
 
 ### 2.1 About the Data
 
-The models in this project were trained from monthly mean atmospheric carbon dioxide concentrations measured in parts per million. The data were collected at the Mauna Loa Observatory in Hawaii, beginning in March 1958. These data are publically available and freely distributed by the National Oceanic & Atmospheric Administration in accordance to their Global Greenhouse Gas Reference Network. The data table used in the project is available at [the NOAA website.](ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt)
+The models in this project were trained from monthly mean atmospheric carbon dioxide concentrations measured in parts per million. The data were collected at the Mauna Loa Observatory in Hawaii, beginning in March 1958. These data are publicly available and freely distributed by the National Oceanic & Atmospheric Administration in accordance to their Global Greenhouse Gas Reference Network. The data table used in the project is available at [the NOAA website.](ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt)
  
 
 ### 2.2 Software Used in Analysis
 
-All statistical analysis performed in this project was done with the `RStudio` integrated development environment. In addition to base `R`, the following software libraries were used: `MASS`, `stats`, `tseries`, and `forecast`. Please note that `forecast::Arima()` was used instead of `stats::arima()`. According to the creator of the `forecast` package, Rob J Hyndman, `Arima()` allows for the inclusion of a contant term in the model when using differenced data. This functionality is not included in `arima()`.
+All statistical analysis performed in this project was done with the `RStudio` integrated development environment. In addition to base `R`, the following software libraries were used: `MASS`, `stats`, `tseries`, and `forecast`. Please note that `forecast::Arima()` was used instead of `stats::arima()`. According to the creator of the `forecast` package, Rob J Hyndman, `Arima()` provides for more robust framework to forecast differenced data than that provided by `stats::arima()`.
 
 ### 2.3 Results
 
-Using SARIMA models, we conclude that atmospheric $\text{CO}_2$ can be accurately forecasted.
+Using SARIMA models, we conclude that atmospheric $\text{CO}_2$ concentrations can be accurately forecasted.
 
 ### 2.4 Summary of Analysis
 
-We begin the project by loading our data in `R`. We first remove the last 10 observations for comparison against our forecast. Next, we begin conducting exploratory analysis of the data and discover that it requires a transformation to statilize variance and differencing to remove trend and seasonality. We perform this transormation and differencing, yielding a stationary time series. Next, we examine the autocorrelations (ACF) and partial autocorrelations (PACF) of the stationary series to identify appropriate models. After constructing two potential models, we conduct model diagnostics to make sure each meets the assumptions of SARIMA. Finally, we choose a 'best' model and use it to forcast ten future observations. These forecasts are compared against the 10 observations we reserved in the beginning in order to evaluate model performance.
+We begin the project by loading our data in `R`. We first remove the last 10 observations for comparison against our forecast. Next, we begin conducting exploratory analysis of the data and discover that it requires a transformation to statilize variance and differencing to remove trend and seasonality. We perform this transformation and differencing, yielding a stationary time series. Next, we examine the autocorrelations (ACF) and partial autocorrelations (PACF) of the stationary series to identify appropriate models. After constructing two potential models, we conduct model diagnostics to make sure each meets the assumptions of SARIMA. Finally, we choose a 'best' model and use it to forecast ten future observations. These forecasts are compared against the 10 observations we reserved in the beginning in order to evaluate model performance.
 
 ## 3. Analysis
 
@@ -50,8 +50,6 @@ ts <- ts$V5
 plot.ts(ts, ylab = "Atmospheric Carbon Dioxide (PPM)", main = "Atmospheric Carbon Dioxide vs. Time")
 ```
 
-We remove the last 10 observations so that we may compare them against the forecasted data.
-
 
 ```{r, echo = F}
 ts <- ifelse(ts == -99.99, NA, ts)
@@ -64,14 +62,14 @@ ts <- as.ts(ts, start=c(1958,3), frequency=12)
 ts <- ts[1:696]
 ```
 
-We make a few observations from this plot. First, there is a strong linear trend. The data is also yearly seasonal. Finally, variance slightly increases over time. As a result, we must transform the series to make it stationary.
+We make a few observations from this plot. First, there is a strong positive trend. The data is also yearly seasonal. Finally, variance slightly increases over time. As a result, we must transform the series to make it stationary.
 
 We also remove the last 10 observations so that we may compare them against the forecasted data.
 
 
 ### 3.2 Data Transformations
 
-To confirm the existence of a linear trend, we construct a linear model of the form $\hat{Y}=\beta_0+\beta_1 X_t$ and impose it onto the time series.
+To demonstrate the existence of a positive trend, we construct a linear model of the form $\hat{Y}=\beta_0+\beta_1 X_t$ and impose it onto the time series.
 
 ```{r, echo = F}
 linMod <- lm(ts~as.numeric(1:length(ts)))
@@ -84,7 +82,7 @@ Apart from the tails, the regression line almost perfectly fits the data. This i
 In order to stabilize variance, we employ the Box-Cox Power transformation. This method finds the best $\lambda$ to apply to the following transformation:
 
 
-$$y_i^{(lambda)}=\begin{cases}
+$$y_i^{(\lambda)}=\begin{cases}
                   \dfrac{y_i^{\lambda}-1}{\lambda}, & \text{if}\ \lambda\not=0 \\
                   \log{y_i}, & \text{if}\ \lambda=0
                \end{cases}$$
@@ -97,12 +95,14 @@ bcTransform <- boxcox(ts~as.numeric(1:length(ts)), lambda = seq(0,1.5,1/10))
 trans <- bcTransform$x[which.max(bcTransform$y)]
 ```
 
+
 Clearly $\lambda=0$ yields the best transformation, so we take the the log of the time series. We plot the transformed series and once again add the best-fitting regression line.
+
 
 ```{r, echo=F}
 ts.log <- log(ts)
 linMod2 <- lm(ts.log~as.numeric(1:length(ts.log)))
-plot.ts(ts.log, ylab = "Log Atmospheric Carbon Dioxide (PPM)", main = "Log Atmospheric Carbon Dioxide vs. Time")
+plot.ts(ts.log, ylab = "Atmospheric Carbon Dioxide (LogPPM)", main = "Log Atmospheric Carbon Dioxide vs. Time")
 abline(linMod2, col = "red")
 ```
 
@@ -110,7 +110,7 @@ The transformation not only stabilizes variance, but also make the positive tren
 
 ```{r, echo = F}
 ts.log.1 <- diff(ts.log,1)
-plot.ts(ts.log.1, ylab = "Diff. Log Atmospheric Carbon Dioxide (PPM)", main = "Diff. Log Atmospheric Carbon Dioxide vs. Time")
+plot.ts(ts.log.1, ylab = "Diff. Atmospheric Carbon Dioxide (LogPPM)", main = "Diff. Log Atmospheric Carbon Dioxide vs. Time")
 var.ts.log <- var(ts.log, na.rm = T)
 var.ts.log.1 <- var(ts.log.1, na.rm =T)
 ```
@@ -119,14 +119,14 @@ Model variance decreases by $0.005218006$, so this differencing is justified. We
 
 ```{r, echo = F}
 ts.log.1.12 <- diff(ts.log.1,12)
-plot.ts(ts.log.1.12, ylab = "Twice Diff. Log Atmospheric Carbon Dioxide (PPM)", main = "Twice Diff. Log Atmospheric Carbon Dioxide vs. Time")
+plot.ts(ts.log.1.12, ylab = "Twice Diff. Atmospheric Carbon Dioxide (LogPPM)", main = "Twice Diff. Log Atmospheric Carbon Dioxide vs. Time")
 abline(h=mean(ts.log.1.12, na.rm = T), col = "red")
 var.ts.log.1.12 <- var(ts.log.1.12, na.rm =T)
 ```
 
 The variance again decreases, this time by `1.065186e-05`, so this differencing is again justified. The mean of the time series is added in red. The model also appears to be stationary, as neither mean nor variance appear to be dependent on time.
 
-To confirm the stationarity of the series, we perform Kwiatkowski-Phillips-Schmidt-Shin (KPSS) test in `R` for the null hypothesis that the series is stationary.
+To confirm the stationarity of the series, we perform Kwiatkowski-Phillips-Schmidt-Shin (KPSS) test in `R` under the null hypothesis that the series is stationary.
 
 ```{r,echo=F,warning=F}
 library(tseries)
@@ -149,30 +149,30 @@ pacf <- acf(ts.log.1.12, type = "partial", plot = T, na.action = na.pass, lag.ma
 
 We begin by examing the seasonal compents, which are visble at lags $l=12n\text{, }n\in\mathbb{N}$. We can clearly see that the ACF cuts off after lag 12, while the PACF exponentially decays at lags that are multiples of 12. This leads us to consider $SAR=0$ and $SMA=1$.
 
-Next, we examine lags 1 through 11 to find the $AR$ and $MA$ order of the model. The ACF cuts off after lag 1 and the PACF quickly decays, so we consider $MA=1$ and $AR=0$. It is also possible that the ACF is tailing off while the PACF cuts off after lag 4, which implies $AR=4$ and $MA=0$. With two possible model orders, we estimate their respective parameters using Maximum Likelihood Estimation.
+Next, we examine lags 1 through 11 to find the $AR$ and $MA$ orders of the model. The ACF cuts off after lag 1 and the PACF quickly decays, so we consider $MA=1$ and $AR=0$. It is also possible that the ACF is tailing off while the PACF cuts off after lag 4, which implies $AR=4$ and $MA=0$. With two possible model orders, we estimate their respective parameters using Maximum Likelihood Estimation.
 
 We consider the following two models:
 ```{r,echo=F,warning=F,message=F}
 library(forecast)
-model1 <- arima(ts.log, order = c(0,1,1), seasonal = list(order = c(0,1,1), period = 12))
-model2 <- arima(ts.log, order = c(4,1,0), seasonal = list(order = c(0,1,1), period = 12))
+model1 <- Arima(ts.log, order = c(0,1,1), seasonal = list(order = c(0,1,1), period = 12))
+model2 <- Arima(ts.log, order = c(4,1,0), seasonal = list(order = c(0,1,1), period = 12))
 ```
 
 * 1. $\text{SARIMA}\ (0,1,1)\ \text{x}\ (0,1,1)_{12}$
-    * $\text{AICc}=-7671.1 \ \text{BIC}=-7653.05$
+    * $\text{AICc}=-7673.12  \ \text{BIC}=-7659.57$
     * $\nabla_{12}\nabla X_t=(1-3.9B)(1-0.89B^{12})Z_t$
 * 2. $\text{SARIMA}\ (4,1,0)\ \text{x}\ (0,1,1)_{12}$
-    * $\text{AICc}=-7671.6 \ \text{BIC}=-7639.92$
-    * $(1+0.37B.17B^2+0.13B^3+0.1B^4)\nabla_{12}\nabla X_t=(1-3.9B)(1-0.89B^{12})Z_t$
+    * $\text{AICc}=-7673.47 \ \text{BIC}=-7646.44$
+    * $(1+0.37B+0.17B^2+0.13B^3+0.1B^4)\nabla_{12}\nabla X_t=(1-0.89B^{12})Z_t$
 
 
 ### 3.4 Model Diagnostics
 
 #### 3.4.1 Model 1
 
-We perform diagnostic checking for the $\text{SARIMA}\ (0,1,1)\ \text{x}\ (0,1,1)_{12}$ model. Using the maximum likelihood estimation method, this model is given by:
-
 $$\nabla_{12}\nabla X_t=(1-3.9B)(1-0.89B^{12})Z_t $$
+
+We perform diagnostic checking for the $\text{SARIMA}\ (0,1,1)\ \text{x}\ (0,1,1)_{12}$ model. 
 
 We begin by plotting the residuals of this model
 
@@ -180,7 +180,16 @@ We begin by plotting the residuals of this model
 plot(model1$residuals, main="Model 1 Residuals")
 ```
 
-Apart from a single outlier at $t=13$, the residuals appear to resemble white noise. We now plot the density of QQ-Plot of the residuals.
+Apart from a single outlier at $t=13$, the residuals appear to resemble white noise.
+
+Intersting, the residuals fail the Shapiro-Wilks normality test with this outlier present, put pass the test when it is removed.
+
+```{r,message=F,echo=F}
+shapiro.test(model1$residuals)
+shapiro.test(model1$residuals[14:706])
+```
+
+We now plot the density of QQ-Plot of the residuals.
 
 ```{r, echo = F}
 hist(model1$residuals, xlim = c(-0.005,0.005), main = "Model 1 Residuals", breaks = 50)
@@ -195,6 +204,8 @@ From these plots, the residuals appears to be approximately normally distributed
 
 We now perform the Box-Pierce, Ljung-Box, and McLeod-Li tests on the residuals.
 
+\newpage
+
 ```{r, echo = F}
 paste("Box-Pierce")
 Box.test(model1$residuals, lag = 26, type = "Box-Pierce", fitdf=2)
@@ -204,7 +215,7 @@ paste("McLeod-Li")
 Box.test((model1$residuals)^2, lag=26-2, type="Ljung-Box")
 ```
 
-This model passes all adequacy at the $\alpha=0.05$ significance level.
+This model passes all adequacy tests at the $\alpha=0.05$ significance level.
 
 We now plot the ACF and PACF of the residuals to ensure they resemble white noise.
 
@@ -220,13 +231,22 @@ Based on the results of this test, we deem this model adequate for forecasting.
 
 #### 3.4.2 Model 2
 
-We now check the adequacy of the second model. Just as before, we plot the residuals, density of the residuals, and the QQ-Plot of the residuals.
+$$(1+0.37B+0.17B^2+0.13B^3+0.1B^4)\nabla_{12}\nabla X_t=(1-0.89B^{12})Z_t$$
+
+We now check the adequacy of the second model. We begin by plotting the model residuals.
 
 ```{r, echo = F}
 plot(model2$residuals, main="Model 2 Residuals")
 ```
 
-Just as before, there is a large outlier at $t=13$. Besides this single point, the residuals resemble white noise.
+Just as before, there is a large outlier at $t=13$. Besides this single point, the residuals resemble white noise. Just as before, the Shapiro-Wilks normality test fails for the unmodified residuals, but indicates normality when this point is removed.
+
+```{r,echo=F}
+shapiro.test(model2$residuals)
+shapiro.test(model2$residuals[14:706])
+```
+
+We now plot the density of the residuals and construct a QQ-Plot.
 
 ```{r, echo = F}
 hist(model2$residuals, xlim = c(-0.005,0.005), main = "Model 2 Residuals", breaks = 50)
@@ -257,30 +277,176 @@ pacf(model2$residuals, na.action = na.pass, main = "PACF of Residuals")
 
 Just as before, there are signifcant spikes at lag 12 in both plots, but we deem this to be acceptable. Like the previous model, Model 2 is suitable for forecasting.
 
-3.4.3 Choosing the Best Model
+#### 3.4.3 Choosing the Best Model
 
 Since both Model 1 and Model 2 pass our residuals tests and have similar AICc and BIC values, choosing a final 'best' model is difficult. We therefore must rely on the principle of parsimony. As such, we choose Model 1 as the final model because it is much simpler, having only two parameters against the five parameters of Model 2.
 
 ### 3.5 Forecasting
 
-Now that we have a final model, we may begin forecasting.
+Now that we have a final model, we may begin forecasting. Forecasts are plotted below in red, and the actual observations appear as asterisks. The blue dotted line represents the $95\%$ confidence interval of the forecasts.
 
 ```{r, echo = F}
 pred <- predict(model1, n.ahead = 10)
 pred.orig <- exp(pred$pred)
 pred.se <- exp(pred$pred)*pred$pred*pred$se
 
-plot.ts(orig, xlim = c(680,length(orig)+10), ylim = c(380,420))
+plot.ts(orig, xlim = c(680,length(orig)+10), ylim = c(380,420), ylab = "Atmospheric CO2 Concentration", main = "Atmospheric CO2 Concentration with Forecasts")
 points((length(orig)+1):(length(orig)+10),pred.orig, col="red")
-points((length(orig)+1):(length(orig)+10),next10, pch = 3)
+points((length(orig)+1):(length(orig)+10),next10, pch = "*")
 lines((length(orig)+1):(length(orig)+10),pred.orig+1.96*pred.se,lty=2, col="blue") 
 lines((length(orig)+1):(length(orig)+10),pred.orig-1.96*pred.se,lty=2, col="blue")
 ```
 
+One can clearly see that the forecasts lie very close to the realized observations. Consequently, we conclude that the model provides great accuracy in forecasting this phenomenon.
+
 ## 4. Conclusion
+
+Seasonal autoregressive integrated moving average time series models provide a viable framework for forecasting atmospheric carbon dioxide concentrations. Of the two SARIMA models considered, both meet the assumptions of the Box-Jenkins methodology for time series forecasting. Consequenty, we yield to Occam's razor and choose the model with the fewest paramerters as our final model. This model is given by: 
+
+$$\nabla_{12}\nabla X_t=(1-3.9B)(1-0.89B^{12})Z_t $$
+
+As one can see from the previous section, this model provides incredibly accurate forecasts of atmospheric $\text{CO}_2$ concentrations 10 months into the future.
 
 ## 5. References
 
-## Appendix A
+* Warrick, Joby. 2014. The Washington Post - 
+CO2 levels in atmosphere rising at dramatically faster rate, U.N. report warns. [Link](
+https://www.washingtonpost.com/national/health-science/co2-levels-in-atmosphere-rising-at-dramatically-faster-rate-un-report-warns/2014/09/08/3e2277d2-378d-11e4-bdfb-de4104544a37_story.html).
 
+* Brockwell, PJ., Davis, RA. 2016. Introduction to Time Series and Forecasting.
 
+* Hyndman, Rob J. 2012. Constants and ARIMA models in R. [Link](http://robjhyndman.com/hyndsight/arimaconstants/).
+
+* Shumway, Robert H., Stoffer, David S. Time Series Analysis and Its Applications with R Examples. 3rd Edition. 2010.
+
+* [The National Oceanic and Atmospheric Administration](http://www.noaa.gov)
+
+* [The R Project for Statistical Computing](https://www.r-project.org)
+
+## Appendix
+
+The `R` used to create the analysis in this report is provided in its entirety below.
+
+```{r, eval=F}
+# Import Data
+ts <- read.table("c02.txt", skip = 3, header = F, sep = "")
+
+# Remove exraneous featurs
+ts <- ts$V5
+
+# Plot original series
+plot.ts(ts, ylab = "Atmospheric Carbon Dioxide (PPM)", 
+        main = "Atmospheric Carbon Dioxide vs. Time")
+
+# Copy series to new variable
+orig <- ts
+
+# Reserve last 10 observations
+next10 <- orig[697:706]
+
+# Convert vector to time series object
+ts <- as.ts(ts, start=c(1958,3), frequency=12)
+ts <- ts[1:696]
+
+# Plot with regression line
+linMod <- lm(ts~as.numeric(1:length(ts)))
+plot.ts(ts, ylab = "Atmospheric Carbon Dioxide (PPM)", 
+        main = "Atmospheric Carbon Dioxide vs. Time")
+abline(linMod, col = "red")
+
+# Find lambda for Box-Cox transformation
+library(MASS)
+bcTransform <- boxcox(ts~as.numeric(1:length(ts)), lambda = seq(0,1.5,1/10))
+trans <- bcTransform$x[which.max(bcTransform$y)]
+
+# Transform data, plot with regression line
+ts.log <- log(ts)
+linMod2 <- lm(ts.log~as.numeric(1:length(ts.log)))
+plot.ts(ts.log, ylab = "Atmospheric Carbon Dioxide (LogPPM)", 
+        main = "Log Atmospheric Carbon Dioxide vs. Time")
+abline(linMod2, col = "red")
+
+# Difference at lag1, compare variance
+ts.log.1 <- diff(ts.log,1)
+plot.ts(ts.log.1, ylab = "Diff. Atmospheric Carbon Dioxide (LogPPM)", 
+        main = "Diff. Log Atmospheric Carbon Dioxide vs. Time")
+var.ts.log <- var(ts.log, na.rm = T)
+var.ts.log.1 <- var(ts.log.1, na.rm =T)
+
+# Difference at lag12, compare variance
+ts.log.1.12 <- diff(ts.log.1,12)
+plot.ts(ts.log.1.12, ylab = "Twice Diff. Atmospheric Carbon Dioxide (LogPPM)",
+        main = "Twice Diff. Log Atmospheric Carbon Dioxide vs. Time")
+abline(h=mean(ts.log.1.12, na.rm = T), col = "red")
+var.ts.log.1.12 <- var(ts.log.1.12, na.rm =T)
+
+# KPSS Test for stationarity
+library(tseries)
+kpss.test(ts.log.1.12)
+
+# Plot ACF, PACF
+acf <- acf(ts.log.1.12, type = "correlation", 
+           plot = T, na.action = na.pass, 
+           lag.max=12*5, main ="ACF")
+pacf <- acf(ts.log.1.12, type = "partial", 
+            plot = T, na.action = na.pass, 
+            lag.max=12*5, main = "PACF")
+
+# Build two appropriate models
+library(forecast)
+model1 <- Arima(ts.log, order = c(0,1,1), 
+                seasonal = list(order = c(0,1,1), period = 12))
+model2 <- Arima(ts.log, order = c(4,1,0), 
+                seasonal = list(order = c(0,1,1), period = 12))
+
+# Model 1 Diagnostics
+plot(model1$residuals, main="Model 1 Residuals")
+shapiro.test(model1$residuals)
+shapiro.test(model1$residuals[14:706])
+hist(model1$residuals, xlim = c(-0.005,0.005), 
+     main = "Model 1 Residuals", breaks = 50)
+qqnorm(model1$residuals)
+qqline(model1$residuals)
+paste("Box-Pierce")
+Box.test(model1$residuals, lag = 26, type = "Box-Pierce", fitdf=2)
+paste("Ljung-Box")
+Box.test(model1$residuals, lag = 26, type = "Ljung-Box", fitdf=2)
+paste("McLeod-Li")
+Box.test((model1$residuals)^2, lag=26-2, type="Ljung-Box")
+acf(model1$residuals, na.action=na.pass, main = "ACF of Residuals")
+pacf(model1$residuals, na.action = na.pass, main = "PACF of Residuals")
+
+# Model 2 Diagnostics
+plot(model2$residuals, main="Model 1 Residuals")
+shapiro.test(model2$residuals)
+shapiro.test(model2$residuals[14:706])
+hist(model1$residuals, xlim = c(-0.005,0.005), 
+     main = "Model 2 Residuals", breaks = 50)
+qqnorm(model2$residuals)
+qqline(model2$residuals)
+paste("Box-Pierce")
+Box.test(model2$residuals, lag = 26, type = "Box-Pierce", fitdf=5)
+paste("Ljung-Box")
+Box.test(model2$residuals, lag = 26, type = "Ljung-Box", fitdf=5)
+paste("McLeod-Li")
+Box.test((model2$residuals)^2, lag=26-5, type="Ljung-Box")
+acf(model2$residuals, na.action=na.pass, 
+    main = "ACF of Residuals")
+pacf(model2$residuals, na.action = na.pass, 
+     main = "PACF of Residuals")
+
+# Forecasting with Model 1
+pred <- predict(model1, n.ahead = 10)
+pred.orig <- exp(pred$pred)
+pred.se <- exp(pred$pred)*pred$pred*pred$se
+
+plot.ts(orig, xlim = c(680,length(orig)+10), ylim = c(380,420),
+        ylab = "Atmospheric CO2 Concentration", 
+        main = "Atmospheric CO2 Concentration with Forecasts")
+points((length(orig)+1):(length(orig)+10),pred.orig, col="red")
+points((length(orig)+1):(length(orig)+10),next10, pch = "*")
+lines((length(orig)+1):(length(orig)+10),pred.orig+1.96*pred.se,lty=2, col="blue") 
+lines((length(orig)+1):(length(orig)+10),pred.orig-1.96*pred.se,lty=2, col="blue")
+```
+
+This report was generated in its entirety by `R Markdown` and  \LaTeX \ .
