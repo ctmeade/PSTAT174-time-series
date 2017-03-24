@@ -160,17 +160,17 @@ model2 <- Arima(ts.log, order = c(4,1,0), seasonal = list(order = c(0,1,1), peri
 
 * 1. $\text{SARIMA}\ (0,1,1)\ \text{x}\ (0,1,1)_{12}$
     * $\text{AICc}=-7673.12  \ \text{BIC}=-7659.57$
-    * $\nabla_{12}\nabla X_t=(1-3.9B)(1-0.89B^{12})Z_t$
+    * $\nabla_{12}\nabla Y_t=(1-3.9B)(1-0.89B^{12})Z_t$
 * 2. $\text{SARIMA}\ (4,1,0)\ \text{x}\ (0,1,1)_{12}$
     * $\text{AICc}=-7673.47 \ \text{BIC}=-7646.44$
-    * $(1+0.37B+0.17B^2+0.13B^3+0.1B^4)\nabla_{12}\nabla X_t=(1-0.89B^{12})Z_t$
+    * $(1+0.37B+0.17B^2+0.13B^3+0.1B^4)\nabla_{12}\nabla Y_t=(1-0.89B^{12})Z_t$
 
 
 ### 3.4 Model Diagnostics
 
 #### 3.4.1 Model 1
 
-$$\nabla_{12}\nabla X_t=(1-3.9B)(1-0.89B^{12})Z_t $$
+$$\nabla_{12}\nabla Y_t=(1-3.9B)(1-0.89B^{12})Z_t $$
 
 We perform diagnostic checking for the $\text{SARIMA}\ (0,1,1)\ \text{x}\ (0,1,1)_{12}$ model. 
 
@@ -212,7 +212,7 @@ Box.test(model1$residuals, lag = 26, type = "Box-Pierce", fitdf=2)
 paste("Ljung-Box")
 Box.test(model1$residuals, lag = 26, type = "Ljung-Box", fitdf=2)
 paste("McLeod-Li")
-Box.test((model1$residuals)^2, lag=26-2, type="Ljung-Box")
+Box.test((model1$residuals)^2, lag=26, type="Ljung-Box")
 ```
 
 This model passes all adequacy tests at the $\alpha=0.05$ significance level.
@@ -231,7 +231,7 @@ Based on the results of this test, we deem this model adequate for forecasting.
 
 #### 3.4.2 Model 2
 
-$$(1+0.37B+0.17B^2+0.13B^3+0.1B^4)\nabla_{12}\nabla X_t=(1-0.89B^{12})Z_t$$
+$$(1+0.37B+0.17B^2+0.13B^3+0.1B^4)\nabla_{12}\nabla Y_t=(1-0.89B^{12})Z_t$$
 
 We now check the adequacy of the second model. We begin by plotting the model residuals.
 
@@ -265,7 +265,7 @@ Box.test(model2$residuals, lag = 26, type = "Box-Pierce", fitdf=5)
 paste("Ljung-Box")
 Box.test(model2$residuals, lag = 26, type = "Ljung-Box", fitdf=5)
 paste("McLeod-Li")
-Box.test((model2$residuals)^2, lag=26-5, type="Ljung-Box")
+Box.test((model2$residuals)^2, lag=26, type="Ljung-Box")
 ```
 
 The model passes all adequacy tests at the $\alpha=0.05$ significance level. Finally, we check that the ACF and PACF of the residuals resemble white noise.
@@ -303,7 +303,7 @@ One can clearly see that the forecasts lie very close to the realized observatio
 
 Seasonal autoregressive integrated moving average time series models provide a viable framework for forecasting atmospheric carbon dioxide concentrations. Of the two SARIMA models considered, both meet the assumptions of the Box-Jenkins methodology for time series forecasting. Consequenty, we yield to Occam's razor and choose the model with the fewest paramerters as our final model. This model is given by: 
 
-$$\nabla_{12}\nabla X_t=(1-3.9B)(1-0.89B^{12})Z_t $$
+$$\nabla_{12}\nabla Y_t=(1-3.9B)(1-0.89B^{12})Z_t $$
 
 As one can see from the previous section, this model provides incredibly accurate forecasts of atmospheric $\text{CO}_2$ concentrations 10 months into the future.
 
@@ -413,7 +413,7 @@ Box.test(model1$residuals, lag = 26, type = "Box-Pierce", fitdf=2)
 paste("Ljung-Box")
 Box.test(model1$residuals, lag = 26, type = "Ljung-Box", fitdf=2)
 paste("McLeod-Li")
-Box.test((model1$residuals)^2, lag=26-2, type="Ljung-Box")
+Box.test((model1$residuals)^2, lag=26, type="Ljung-Box")
 acf(model1$residuals, na.action=na.pass, main = "ACF of Residuals")
 pacf(model1$residuals, na.action = na.pass, main = "PACF of Residuals")
 
@@ -430,7 +430,7 @@ Box.test(model2$residuals, lag = 26, type = "Box-Pierce", fitdf=5)
 paste("Ljung-Box")
 Box.test(model2$residuals, lag = 26, type = "Ljung-Box", fitdf=5)
 paste("McLeod-Li")
-Box.test((model2$residuals)^2, lag=26-5, type="Ljung-Box")
+Box.test((model2$residuals)^2, lag=26, type="Ljung-Box")
 acf(model2$residuals, na.action=na.pass, 
     main = "ACF of Residuals")
 pacf(model2$residuals, na.action = na.pass, 
